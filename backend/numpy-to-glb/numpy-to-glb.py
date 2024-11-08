@@ -9,44 +9,79 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def image_data_to_glb(
-    data,
+    wall_data,
+    floor_ceiling_data,
     output_filename,
-    height=5.0,
-    buffer_distance=0.1
+    wall_height=5.0,
+    floor_height=0.1,
+    ceiling_height=0.1,
+    buffer_distance=0.1,
+    walls=True,
+    floor=True,
+    ceiling=True
 ):
     """
     Extrude detected contours from image data and export as a GLB file.
 
     Parameters:
-        data (np.ndarray): 2D array of image data where non-zero pixels indicate boundaries.
+        wall_data (np.ndarray): 2D array where non-zero pixels indicate wall boundaries.
+        floor_ceiling_data (np.ndarray): 2D array where non-zero pixels indicate floor/ceiling.
         output_filename (str): The path for the output GLB file.
-        height (float): The extrusion height.
+        wall_height (float): The extrusion height for walls.
+        floor_height (float): The extrusion height for the floor.
+        ceiling_height (float): The extrusion height for the ceiling.
         buffer_distance (float): The buffer distance for lines.
+        walls (bool): Whether to create walls.
+        floor (bool): Whether to create a floor.
+        ceiling (bool): Whether to create a ceiling.
     """
     try:
-        # Step 1: Apply edge detection to highlight lines/boundaries
-        logger.info("Applying edge detection")
-        edges = filters.sobel(data)
-
-        # Step 2: Find contours of the detected edges, representing potential line paths
-        logger.info("Finding contours")
-        contours = measure.find_contours(edges, level=0.1)
-
-        # Initialize a list to hold the extruded meshes
         meshes = []
 
-        # Step 3: Process each contour to create an extruded 3D shape
-        for contour in contours:
-            # Convert contour points to a polygon and extrude
-            polygon = Polygon(contour)
-            if polygon.is_valid:
-                logger.info("Extruding a polygon")
-                mesh = extrude_polygon(polygon, height=height)
-                meshes.append(mesh)
-            else:
-                logger.warning("Invalid polygon detected, skipping")
+        # Process walls if enabled
+        if walls:
+            logger.info("Processing walls")
+            edges = filters.sobel(wall_data)
+            contours = measure.find_contours(edges, level=0.1)
 
-        # Step 4: Combine all meshes into a single mesh
+            for contour in contours:
+                polygon = Polygon(contour)
+                if polygon.is_valid:
+                    mesh = extrude_polygon(polygon, height=wall_height)
+                    meshes.append(mesh)
+                else:
+                    logger.warning("Invalid wall polygon detected, skipping")
+
+        # Process floor if enabled
+        if floor:
+            logger.info("Processing floor")
+            contours = measure.find_contours(floor_ceiling_data, level=0.1)
+
+            for contour in contours:
+                polygon = Polygon(contour)
+                if polygon.is_valid:
+                    # Extrude the floor at the specified height
+                    mesh = extrude_polygon(polygon, height=floor_height)
+                    meshes.append(mesh)
+                else:
+                    logger.warning("Invalid floor polygon detected, skipping")
+
+        # Process ceiling if enabled
+        if ceiling:
+            logger.info("Processing ceiling")
+            contours = measure.find_contours(floor_ceiling_data, level=0.1)
+
+            for contour in contours:
+                polygon = Polygon(contour)
+                if polygon.is_valid:
+                    # Extrude the ceiling and shift it vertically
+                    ceiling_mesh = extrude_polygon(polygon, height=ceiling_height)
+                    ceiling_mesh.apply_translation([0, 0, wall_height])  # Shift to ceiling height
+                    meshes.append(ceiling_mesh)
+                else:
+                    logger.warning("Invalid ceiling polygon detected, skipping")
+
+        # Combine all meshes into a single mesh
         logger.info("Combining meshes")
         combined_mesh = trimesh.util.concatenate(meshes)
 
@@ -61,18 +96,25 @@ def image_data_to_glb(
         raise
 
 if __name__ == "__main__":
-    # Load the image data file
-    walls = np.load('walls.npy')
-    floor_ceiling = np.load('floor-ceiling.npy')
+    # Load the wall and floor-ceiling data
+    wall_data = np.load('walls.npy')
+    floor_ceiling_data = np.load('floor-ceiling.npy')
     
-    walls = True
+    # Set booleans for the structures to be created
+    walls = False
     floor = True
-    ceiling = False
+    ceiling = True
     
     # Run the extrusion and export process
     image_data_to_glb(
-        data=walls,
-        output_filename='test-numpy-3.glb',
-        height=50.0,
-        buffer_distance=0.1
+        wall_data=wall_data,
+        floor_ceiling_data=floor_ceiling_data,
+        output_filename='test-numpy-6.glb',
+        wall_height=50.0,
+        floor_height=0.5,
+        ceiling_height=0.5,
+        buffer_distance=0.1,
+        walls=walls,
+        floor=floor,
+        ceiling=ceiling
     )
