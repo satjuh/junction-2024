@@ -33,6 +33,12 @@ def read_house(house_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="House not found")
     return db_house
 
+@router.delete("/houses/{house_id}", response_model=schemas.House)
+def read_house(house_id: UUID, db: Session = Depends(get_db)):
+    db.query(models.House).filter(models.House.uuid == house_id).delete()
+
 @router.get("/houses/", response_model=list[schemas.House])
 def read_houses(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.House).offset(skip).limit(limit).all()
+
+
