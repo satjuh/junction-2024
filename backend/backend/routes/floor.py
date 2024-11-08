@@ -23,6 +23,10 @@ def read_floor(floor_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Floor not found")
     return db_floor
 
+@router.delete("/floor/{floor_id}", response_model=schemas.House)
+def read_house(floor_id: UUID, db: Session = Depends(get_db)):
+    db.query(models.Floor).filter(models.Floor.uuid == floor_id).delete()
+
 @router.get("/floors/", response_model=list[schemas.Floor])
 def read_floors(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.Floor).offset(skip).limit(limit).all()

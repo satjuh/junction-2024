@@ -26,6 +26,10 @@ def read_object3d(object3d_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Object3D not found")
     return db_object3d
 
+@router.delete("/object3d/{object3d_id}", response_model=schemas.House)
+def read_house(object3d_id: UUID, db: Session = Depends(get_db)):
+    db.query(models.Object3D).filter(models.Object3D.uuid == object3d_id).delete()
+
 @router.get("/object3ds/", response_model=list[schemas.Object3D])
 def read_object3ds(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.Object3D).offset(skip).limit(limit).all()
