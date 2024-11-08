@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, Relationship, backref, mapped_column, relationship
 from sqlalchemy.orm.properties import ForeignKey
@@ -17,8 +17,12 @@ class House(Base):
     __tablename__ = "house"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
+    description = Column(String)
     floors : Mapped[List["Floor"]] = relationship()
-    # floors = Column(Integer)
+    image = Column(String)
+    address = Column(String)
+    longitude = Column(Float)
+    latitude = Column(Float)
 
 
 class Floor(Base):
