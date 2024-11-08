@@ -2,18 +2,24 @@ from uuid import UUID
 from fastapi import  Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend import models, schemas
-from ..db import engine, get_db
+from ..db import get_db
 from fastapi import APIRouter
 
 import uuid
-
-models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
 
 @router.post("/houses/", response_model=schemas.House)
 def create_house(house: schemas.HouseCreate, db: Session = Depends(get_db)):
-    db_house = models.House(name=house.name, uuid=uuid.uuid4())
+    db_house = models.House(
+        name=house.name, 
+        uuid=uuid.uuid4(), 
+        image=house.image, 
+        description=house.description, 
+        address=house.address,
+        longitude=house.longitude,
+        latitude=house.latitude,
+    )
     db.add(db_house)
     db.commit()
     db.refresh(db_house)

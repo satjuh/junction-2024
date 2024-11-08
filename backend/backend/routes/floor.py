@@ -2,10 +2,8 @@ from uuid import UUID
 from fastapi import  Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend import models, schemas
-from ..db import engine, get_db
+from ..db import get_db
 from fastapi import APIRouter
-
-models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
 

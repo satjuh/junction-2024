@@ -19,6 +19,11 @@ class Item(ItemBase):
 
 class HouseBase(BaseModel):
     name: str
+    image: str
+    description: str
+    address: str
+    longitude: float
+    latitude: float
 
 
 class HouseCreate(HouseBase):
