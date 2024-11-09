@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routes import floor, house, object3d
+from backend.routes import file, floor, house, object3d
 from backend.models import *
 from backend import models
 from .db import engine
@@ -21,6 +21,7 @@ app.add_middleware(
 app.include_router(house.router)
 app.include_router(floor.router)
 app.include_router(object3d.router)
+app.include_router(file.router)
 
 if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)

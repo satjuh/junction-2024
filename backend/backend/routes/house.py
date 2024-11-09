@@ -36,7 +36,7 @@ def read_house(house_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.delete("/houses/{house_id}", response_model=schemas.House)
-def read_house(house_id: UUID, db: Session = Depends(get_db)):
+def delete_house(house_id: UUID, db: Session = Depends(get_db)):
     db.query(models.House).filter(models.House.uuid == house_id).delete()
 
 
