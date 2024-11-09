@@ -6,6 +6,7 @@ from sqlalchemy.orm.properties import ForeignKey
 from .db import Base
 import uuid
 
+
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
@@ -18,7 +19,7 @@ class House(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
     description = Column(String)
-    floors : Mapped[List["Floor"]] = relationship()
+    floors: Mapped[List["Floor"]] = relationship()
     image = Column(String)
     address = Column(String)
     longitude = Column(Float)
@@ -30,17 +31,16 @@ class Floor(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
     height = Column(Integer)
-    house_id:  Mapped[UUID] = mapped_column(ForeignKey("house.uuid"), nullable=True)
-    objects : Mapped[List["Object3D"]] = relationship()
-    
+    house_id: Mapped[UUID] = mapped_column(ForeignKey("house.uuid"), nullable=True)
+    objects: Mapped[List["Object3D"]] = relationship()
+
     # svg
     # svg_model
     # svg_simplified
-    
+
 
 class Object3D(Base):
     __tablename__ = "objects3D"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
-    floor_id:  Mapped[UUID] = mapped_column(ForeignKey("floor.uuid"), nullable=True)
-
+    floor_id: Mapped[UUID] = mapped_column(ForeignKey("floor.uuid"), nullable=True)

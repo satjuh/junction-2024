@@ -1,11 +1,12 @@
 from uuid import UUID
-from fastapi import  Depends, HTTPException
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend import models, schemas
 from ..db import get_db
 from fastapi import APIRouter
 
 router = APIRouter()
+
 
 @router.post("/floors/", response_model=schemas.Floor)
 def create_floor(floor: schemas.FloorCreate, db: Session = Depends(get_db)):
@@ -16,6 +17,7 @@ def create_floor(floor: schemas.FloorCreate, db: Session = Depends(get_db)):
     db.refresh(db_floor)
     return db_floor
 
+
 @router.get("/floors/{floor_id}", response_model=schemas.Floor)
 def read_floor(floor_id: UUID, db: Session = Depends(get_db)):
     db_floor = db.query(models.Floor).filter(models.Floor.uuid == floor_id).first()
@@ -23,9 +25,11 @@ def read_floor(floor_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Floor not found")
     return db_floor
 
+
 @router.delete("/floor/{floor_id}", response_model=schemas.House)
 def read_house(floor_id: UUID, db: Session = Depends(get_db)):
     db.query(models.Floor).filter(models.Floor.uuid == floor_id).delete()
+
 
 @router.get("/floors/", response_model=list[schemas.Floor])
 def read_floors(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
