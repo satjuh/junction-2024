@@ -91,7 +91,7 @@ class Object3D(Object3DBase):
 class File(BaseModel):
     uuid: UUID
     content_type: str
-    data: str
+    data: str | None
 
     class Config:
         from_attributes = True
