@@ -44,3 +44,9 @@ class Object3D(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
     floor_id: Mapped[UUID] = mapped_column(ForeignKey("floor.uuid"), nullable=True)
+
+
+class UploadedFile(Base):
+    __tablename__ = "uploaded_file"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    content_type = Column(String)

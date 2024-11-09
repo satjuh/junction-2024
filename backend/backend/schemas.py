@@ -70,3 +70,11 @@ class Object3D(Object3DBase):
 
     class Config:
         from_attributes = True
+
+
+class File(BaseModel):
+    uuid: UUID
+    content_type: str
+
+    class Config:
+        from_attributes = True
