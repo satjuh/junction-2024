@@ -11,7 +11,14 @@ router = APIRouter()
 @router.post("/floor", response_model=schemas.Floor)
 def create_floor(floor: schemas.FloorCreate, db: Session = Depends(get_db)):
     house = db.query(models.House).filter(models.House.uuid == floor.house_id).one()
-    db_floor = models.Floor(name=floor.name, house_id=house.uuid)
+    db_floor = models.Floor(
+        name=floor.name,
+        height=floor.height,
+        index=floor.index,
+        house_id=house.uuid,
+        floor_3D=floor.floor_3D,
+        floor_png=floor.floor_png,
+    )
     db.add(db_floor)
     db.commit()
     db.refresh(db_floor)
