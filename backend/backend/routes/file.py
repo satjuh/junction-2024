@@ -81,7 +81,7 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     return {"floor_png": file_uuid, "floor_3D": file_uuid2}
 
 
-@router.get("/file/{file_id}")
+@router.get("/file/{file_uuid}")
 async def get_file(file_uuid: uuid.UUID):
     filename = os.path.join(file_folder, str(file_uuid))
     return FileResponse(path=filename, filename=str(file_uuid))
