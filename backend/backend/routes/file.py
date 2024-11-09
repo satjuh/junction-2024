@@ -19,7 +19,7 @@ router = APIRouter()
 file_folder = "files"
 
 
-@router.post("/file/", response_model=uuid.UUID)
+@router.post("/file/")
 async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     try:
         os.makedirs(file_folder)
