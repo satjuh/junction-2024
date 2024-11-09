@@ -43,6 +43,12 @@ class Object3D(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
     floor_id: Mapped[UUID] = mapped_column(ForeignKey("floor.uuid"), nullable=True)
+    x = Column(Float)
+    y = Column(Float)
+    z = Column(Float)
+    rotation = Column(Float)
+    data = Column(String)
+    file_uuid = Column(UUID)
 
 
 class UploadedFile(Base):

@@ -14,7 +14,15 @@ router = APIRouter()
 def create_object3d(object3d: schemas.Object3DCreate, db: Session = Depends(get_db)):
     floor = db.query(models.Floor).filter(models.Floor.uuid == object3d.floor_id).one()
     db_object3d = models.Object3D(
-        name=object3d.name, uuid=uuid.uuid4(), floor_id=floor.uuid
+        name=object3d.name,
+        uuid=uuid.uuid4(),
+        floor_id=floor.uuid,
+        x=object3d.x,
+        y=object3d.y,
+        z=object3d.z,
+        rotation=object3d.rotation,
+        data=object3d.data,
+        file_uuid=object3d.file_uuid,
     )
     db.add(db_object3d)
     db.commit()
@@ -33,7 +41,7 @@ def read_object3d(object3d_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.delete("/object3d/{object3d_id}", response_model=schemas.House)
-def read_house(object3d_id: UUID, db: Session = Depends(get_db)):
+def delete_object3d(object3d_id: UUID, db: Session = Depends(get_db)):
     db.query(models.Object3D).filter(models.Object3D.uuid == object3d_id).delete()
 
 

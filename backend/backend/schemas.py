@@ -68,6 +68,13 @@ class Floor(FloorBase):
 
 class Object3DBase(BaseModel):
     name: str
+    x: float
+    y: float
+    z: float
+    data: str
+    rotation: float
+    data: str
+    file_uuid: UUID
 
 
 class Object3DCreate(Object3DBase):
