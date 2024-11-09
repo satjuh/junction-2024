@@ -41,7 +41,7 @@ export const getHouses = async (): Promise<House[]> => {
 }
 
 export const getHouse = async (fetch: typeof window.fetch, uuid: string): Promise<House> => {
-  const response = await fetch(`${baseUrl}/houses/${uuid}/`)
+  const response = await fetch(`${baseUrl}/houses/${uuid}`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch house')

@@ -1,30 +1,17 @@
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { fileUrl } from '$lib/api/files'
   import type { Floor as IFloor } from '$lib/api/floors'
   import { T, useTask, useThrelte } from '@threlte/core'
-  import { interactivity, OrbitControls, useGltf } from '@threlte/extras'
-  import {
-    Box3,
-    BoxGeometry,
-    Group,
-    LineBasicMaterial,
-    LineSegments,
-    Mesh,
-    MeshBasicMaterial,
-    MeshStandardMaterial,
-    Object3D,
-    Vector3,
-    WireframeGeometry
-  } from 'three'
-  import { CSS2DRenderer, WireframeGeometry2 } from 'three/examples/jsm/Addons.js'
-  import { degToRad } from 'three/src/math/MathUtils.js'
+  import { interactivity, OrbitControls } from '@threlte/extras'
+  import { Box3, Group, Object3D, Vector3 } from 'three'
+  import { CSS2DRenderer } from 'three/examples/jsm/Addons.js'
   import Floor from './Floor.svelte'
 
   type Props = {
     floors: IFloor[]
   }
 
-  // let { floors }: Props = $props()
+  let { floors }: Props = $props()
 
   interactivity()
 
@@ -43,13 +30,6 @@
       -center.z
     )
   }
-
-  let floors = $state(
-    Array.from({ length: 10 }, (_, i) => ({
-      baseY: (1 + i) * 25,
-      gltfUrl: '/test-7.glb'
-    }))
-  )
 
   const { scene, size, autoRenderTask, camera } = useThrelte()
 
@@ -93,7 +73,11 @@
 </T.PerspectiveCamera>
 
 <T.Group bind:ref={mainGroup}>
-  {#each floors as { baseY, gltfUrl }, i (i)}
+  {#each floors as floor, i (i)}
+    {@const floorsBefore = floors.slice(0, i)}
+    {@const baseY = floorsBefore.reduce((acc, f) => acc + f.height, 0)}
+    {@const gltfUrl = fileUrl(floor.floor_3D)}
+
     <Floor
       {baseY}
       {gltfUrl}

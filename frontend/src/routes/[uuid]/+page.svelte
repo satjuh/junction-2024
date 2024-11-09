@@ -9,7 +9,6 @@
   let floors = $derived(house.floors)
 
   $effect(() => {
-    console.log(house)
     if (!floors.length) {
       goto(`/${house.uuid}/edit`)
     }
@@ -29,7 +28,7 @@
       mieDirectionalG={0.7}
       exposure={1}
     />
-    <ViewScene />
+    <ViewScene {floors} />
   </Canvas>
 </main>
 <div id="layout" class="absolute right-0 top-0 h-full w-[25vw] min-w-72 flex-col bg-black">
