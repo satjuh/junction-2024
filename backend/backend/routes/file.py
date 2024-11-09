@@ -5,6 +5,7 @@ from fastapi import Depends, UploadFile, APIRouter
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List
+import json
 
 from backend import models, schemas
 from backend.db import get_db
@@ -85,6 +86,29 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
 async def get_file(file_uuid: uuid.UUID):
     filename = os.path.join(file_folder, str(file_uuid))
     return FileResponse(path=filename, filename=str(file_uuid))
+
+
+@router.post("/file/3d-model")
+async def upload_3d_model(
+    data: str, in_file: UploadFile, db: Session = Depends(get_db)
+):
+    try:
+        os.makedirs(file_folder)
+    except FileExistsError:
+        pass
+
+    img_bytes = await in_file.read()
+
+    file_uuid = uuid.uuid4()
+    filename = os.path.join(file_folder, str(file_uuid))
+    u_file = UploadedFile(uuid=file_uuid, content_type=in_file.content_type, data=data)
+    db.add(u_file)
+    async with aiofiles.open(filename, "wb+") as out_file:
+        await out_file.write(img_bytes)
+
+    db.commit()
+
+    return file_uuid
 
 
 @router.get("/files", response_model=List[schemas.File])

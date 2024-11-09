@@ -55,3 +55,4 @@ class UploadedFile(Base):
     __tablename__ = "uploaded_file"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     content_type = Column(String)
+    data = Column(String, nullable=True)
