@@ -10,7 +10,7 @@ import uuid
 router = APIRouter()
 
 
-@router.post("/object3ds/", response_model=schemas.Object3D)
+@router.post("/object3ds", response_model=schemas.Object3D)
 def create_object3d(object3d: schemas.Object3DCreate, db: Session = Depends(get_db)):
     floor = db.query(models.Floor).filter(models.Floor.uuid == object3d.floor_id).one()
     db_object3d = models.Object3D(

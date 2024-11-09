@@ -10,7 +10,7 @@ import uuid
 router = APIRouter()
 
 
-@router.post("/houses/", response_model=schemas.House)
+@router.post("/houses", response_model=schemas.House)
 def create_house(house: schemas.HouseCreate, db: Session = Depends(get_db)):
     db_house = models.House(
         name=house.name,
@@ -40,6 +40,6 @@ def delete_house(house_id: UUID, db: Session = Depends(get_db)):
     db.query(models.House).filter(models.House.uuid == house_id).delete()
 
 
-@router.get("/houses/", response_model=list[schemas.House])
+@router.get("/houses", response_model=list[schemas.House])
 def read_houses(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.House).offset(skip).limit(limit).all()

@@ -42,11 +42,20 @@ class House(HouseBase):
 
 
 class FloorBase(BaseModel):
-    name: str
+    name: Optional[str]
+    height: Optional[int]
+    index: Optional[int]
+    floor_3D: Optional[UUID]
+    floor_png: Optional[UUID]
+    house_id: Optional[UUID]
 
 
 class FloorCreate(FloorBase):
-    house_id: UUID
+    pass
+
+
+class FloorUpdate(FloorBase):
+    name: Optional[str]
 
 
 class Floor(FloorBase):

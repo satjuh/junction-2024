@@ -31,12 +31,11 @@ class Floor(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
     height = Column(Integer)
+    index = Column(Integer)
+    floor_3D = Column(UUID(as_uuid=True), nullable=True)
+    floor_png = Column(UUID(as_uuid=True), nullable=True)
     house_id: Mapped[UUID] = mapped_column(ForeignKey("house.uuid"), nullable=True)
     objects: Mapped[List["Object3D"]] = relationship()
-
-    # svg
-    # svg_model
-    # svg_simplified
 
 
 class Object3D(Base):
