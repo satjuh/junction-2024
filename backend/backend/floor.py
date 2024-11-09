@@ -144,9 +144,9 @@ def create_simple_floor(
     )
 
     # Convert output_array back to 0 and 255
-    floor_array = wall_detector(floor_plan, 190, 3, 1500, 20)
+    floor_array = wall_detector(floor_plan, 190, 5, 1500, 20)
 
     filled_floor = floor(floor_array)
     # Convert the output array back to an image and save it
-    output_floor = Image.fromarray(filled_floor.astype(np.uint8))
-    return output_array
+    output_floor = filled_floor.astype(np.uint8)
+    return output_floor

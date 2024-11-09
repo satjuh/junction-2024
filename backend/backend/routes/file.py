@@ -29,7 +29,9 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     img = await in_file.read()
     img = pdf_to_nparray(img)
     walls = create_simple_floorplan(img, 9, 190, 1500, 20)
-    floor = create_simple_floor(img, 9, 190, 1500, 20)
+    floor = create_simple_floor(img, 5, 190, 1500, 20)
+    with open("/tmp/floor.png", "wb") as f:
+        f.write(array_into_png(floor))
     png_walls = array_into_png(walls)
 
     file_uuid = uuid.uuid4()
@@ -44,8 +46,8 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     u_file = UploadedFile(uuid=file_uuid2, content_type=in_file.content_type)
     db.add(u_file)
     image_data_to_glb(
-        floor,
-        floor_ceiling_data=walls,
+        walls,
+        floor_ceiling_data=floor,
         output_filename=filename + ".glb",
         wall_height=2.5,  # Set realistic wall height in meters
         floor_height=0.25,
