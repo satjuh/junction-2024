@@ -139,14 +139,15 @@ def wall_detector(
 def create_simple_floor(
     floor_plan: np.ndarray, k, threshold, area_threshold, elongation_threshold
 ):
-    output_array = wall_detector(
-        floor_plan, threshold, k, area_threshold, elongation_threshold
-    )
-
+    output_img = Image.fromarray(floor_plan.astype(np.uint8))
+    output_img.save('orig_.png')
     # Convert output_array back to 0 and 255
     floor_array = wall_detector(floor_plan, 190, 5, 1500, 20)
-
+    
     filled_floor = floor(floor_array)
+    output_floor = Image.fromarray(filled_floor.astype(np.uint8))
+    output_floor.save('floor_.png')
     # Convert the output array back to an image and save it
     output_floor = filled_floor.astype(np.uint8)
+    
     return output_floor

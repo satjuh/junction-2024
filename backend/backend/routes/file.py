@@ -1,7 +1,8 @@
 import uuid
 import aiofiles
 import os
-
+from pdf2image import convert_from_path
+import numpy as np
 from fastapi import Depends, UploadFile, APIRouter
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -10,7 +11,7 @@ from typing import List
 from backend import models, schemas
 from backend.db import get_db
 from backend.models import UploadedFile
-from backend.process import pdf_to_nparray, create_simple_floorplan, array_into_png
+from backend.process import pdf_to_nparray, create_simple_floorplan, array_into_png, png_to_nparray
 from backend.numpy_to_glb import image_data_to_glb
 from backend.floor import create_simple_floor
 
@@ -26,10 +27,21 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     except FileExistsError:
         pass
 
-    img = await in_file.read()
-    img = pdf_to_nparray(img)
+    img_bytes = await in_file.read()
+    content_type = in_file.content_type
+    img = 0
+    if content_type == 'application/pdf':
+        # Handle PDF to NumPy array conversion
+        img = pdf_to_nparray(img_bytes)
+    elif content_type == 'image/png':
+        # Handle PNG to NumPy array conversion
+        img = png_to_nparray(img_bytes)
+    
+    #img = pdf_to_nparray(img)
+    #img = np.array(convert_from_path("/root/code/Hackathon/junction-2024/backend/floor_1.pdf", grayscale=True)).astype(np.float32)[0]
+    img2 = img.copy()
     walls = create_simple_floorplan(img, 9, 190, 1500, 20)
-    floor = create_simple_floor(img, 5, 190, 1500, 20)
+    floor = create_simple_floor(img2, 5, 190, 1500, 20)
     with open("/tmp/floor.png", "wb") as f:
         f.write(array_into_png(floor))
     png_walls = array_into_png(walls)

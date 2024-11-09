@@ -9,6 +9,8 @@ from io import BytesIO
 def pdf_to_nparray(pdf: bytes):
     return np.array(convert_from_bytes(pdf)[0].convert("L"))
 
+def png_to_nparray(png: bytes):
+    return np.array(Image.open(BytesIO(png)).convert("L"))
 
 def create_simple_floorplan(
     img_array: np.ndarray, k, threshold, area_threshold, elongation_threshold
@@ -54,7 +56,8 @@ def create_simple_floorplan(
 
     # Convert output_array back to 0 and 255
     output_array = (1 - output_array) * 255  # Invert back to original color scheme
-
+    output_floor = Image.fromarray(output_array.astype(np.uint8))
+    output_floor.save('walls_.png')
     return output_array
 
 
