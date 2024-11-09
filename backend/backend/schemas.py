@@ -46,6 +46,7 @@ class FloorBase(BaseModel):
     height: Optional[int]
     index: Optional[int]
     floor_3D: Optional[UUID]
+    floor_3D_walls: Optional[UUID]
     floor_png: Optional[UUID]
     house_id: Optional[UUID]
 

@@ -17,6 +17,7 @@ def create_floor(floor: schemas.FloorCreate, db: Session = Depends(get_db)):
         index=floor.index,
         house_id=house.uuid,
         floor_3D=floor.floor_3D,
+        floor_3D_walls=floor.floor_3D_walls,
         floor_png=floor.floor_png,
     )
     db.add(db_floor)
@@ -49,6 +50,8 @@ def update_floor(
         new_floor.floor_png = floor.floor_png
     if new_floor.floor_3D is not None:
         new_floor.floor_3D = floor.floor_3D
+    if new_floor.floor_3D_walls is not None:
+        new_floor.floor_3D_walls = floor.floor_3D_walls
     if new_floor.height is not None:
         new_floor.height = floor.height
     if new_floor.name is not None:

@@ -79,7 +79,33 @@ async def upload_file(in_file: UploadFile, db: Session = Depends(get_db)):
     os.rename(filename + ".glb", filename)
     db.commit()
 
-    return {"floor_png": file_uuid, "floor_3D": file_uuid2}
+    file_uuid3 = uuid.uuid4()
+    filename = os.path.join(file_folder, str(file_uuid3))
+    u_file = UploadedFile(uuid=file_uuid3, content_type=in_file.content_type)
+    db.add(u_file)
+    image_data_to_glb(
+        walls,
+        floor_ceiling_data=floor,
+        output_filename=filename + ".glb",
+        wall_height=2.5,  # Set realistic wall height in meters
+        floor_height=0.25,
+        ceiling_height=0.25,
+        buffer_distance=0.1,
+        walls=True,
+        floor=True,
+        ceiling=False,
+        scaling_factor=0.07,  # Pass the scaling factor
+        scaling_method="resize",  # Choose the scaling method
+        contour_filter=1.0,  # Filter out small contours
+    )
+    os.rename(filename + ".glb", filename)
+    db.commit()
+
+    return {
+        "floor_png": file_uuid,
+        "floor_3D": file_uuid2,
+        "floor_3D_walls": file_uuid3,
+    }
 
 
 @router.get("/file/{file_uuid}")
