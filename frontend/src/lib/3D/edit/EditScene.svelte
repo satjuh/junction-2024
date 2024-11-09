@@ -3,16 +3,15 @@
   import type { Floor as IFloor } from '$lib/api/floors'
   import { T, useTask, useThrelte } from '@threlte/core'
   import { interactivity, OrbitControls } from '@threlte/extras'
-  import { Box3, Group, Object3D, Vector3 } from 'three'
+  import { Box3, Group, Mesh, Object3D, PerspectiveCamera, Vector3 } from 'three'
   import { CSS2DRenderer } from 'three/examples/jsm/Addons.js'
-  import Floor from './Floor.svelte'
+  import Floor from '../Floor.svelte'
 
   type Props = {
-    floors: (IFloor & { hovering?: boolean })[]
-    somethingElseHovering?: boolean
+    floor: IFloor
   }
 
-  let { floors, somethingElseHovering }: Props = $props()
+  let { floor }: Props = $props()
 
   interactivity()
 
@@ -32,7 +31,7 @@
     )
   }
 
-  const { scene, size, autoRenderTask, camera } = useThrelte()
+  const { scene, size, autoRenderTask, camera: defaultCamera } = useThrelte()
 
   // Set up the CSS2DRenderer to run in a div placed atop the <Canvas>
   const element = document.querySelector('#css-renderer-target') as HTMLElement
@@ -49,7 +48,7 @@
 
   useTask(
     () => {
-      cssRenderer.render(scene, camera.current)
+      cssRenderer.render(scene, defaultCamera.current)
     },
     {
       after: autoRenderTask,
@@ -57,39 +56,59 @@
     }
   )
 
+  function fitObjectToCamera(obj: Mesh): void {
+    const box = new Box3().setFromObject(obj)
+    const size = new Vector3()
+    box.getSize(size)
+
+    const center = new Vector3()
+    box.getCenter(center)
+
+    // Calculate the required distance based on the field of view
+    const maxSize = Math.max(size.x, size.y, size.z)
+    const fov = (camera.fov * Math.PI) / 180 // Convert FOV to radians
+    let distance = maxSize / (2 * Math.tan(fov / 2))
+
+    // Offset the distance a bit for padding
+    distance *= 1.2
+
+    // Update the camera position and orientation
+    camera.position.set(center.x, center.y, center.z + distance)
+    camera.lookAt(center)
+
+    // Update the camera projection matrix
+    camera.updateProjectionMatrix()
+  }
+
   let hoveringFloor = $state<null | number>(null)
 
   // svelte-ignore non_reactive_update
   let mainGroup: Group
+  // svelte-ignore non_reactive_update
+  let camera: PerspectiveCamera
 </script>
 
 <T.PerspectiveCamera
   makeDefault
-  position={[500, 300, 500]}
+  position={[0, 300, 0]}
   oncreate={(ref) => {
-    ref.lookAt(0, 1, 0)
+    ref.lookAt(0, 0, 0)
   }}
+  bind:ref={camera}
 >
   <OrbitControls enableDamping />
 </T.PerspectiveCamera>
 
 <T.Group>
   <T.Group bind:ref={mainGroup}>
-    {#each floors as floor, i (i)}
-      {@const floorsBefore = floors.slice(0, i)}
-      {@const baseY = floorsBefore.reduce((acc, f) => acc + f.height, 0)}
-      {@const gltfUrl = fileUrl(floor.floor_3D)}
-
-      <Floor
-        {baseY}
-        {gltfUrl}
-        onClick={() => {}}
-        onLoad={() => (i === 0 ? initialCenter(mainGroup) : {})}
-        label={floor.name}
-        {somethingElseHovering}
-        hovering={floor.hovering}
-      />
-    {/each}
+    <Floor
+      baseY={floor.height}
+      gltfUrl={fileUrl(floor.floor_3D)}
+      onLoad={(obj) => {
+        initialCenter(mainGroup)
+        fitObjectToCamera(obj as Mesh)
+      }}
+    />
   </T.Group>
 
   <T.Mesh rotation.x={-Math.PI / 2} receiveShadow>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import { fileUrl, uploadPng } from '$lib/api/files.js'
   import { createFloor, updateFloor, type Floor } from '$lib/api/floors.js'
   import Button from '$lib/components/basics/Button.svelte'
@@ -49,29 +50,41 @@
     for (let i = 0; i < floors.length; i++) {
       const floor = floors[i]
 
-      if (isServerFloor(floor)) {
-        const newFloor = await updateFloor(floor.uuid, {
-          ...floor,
-          index: i,
-          name: `Floor ${i + 1}`
-        })
-        floors[i] = newFloor
-      } else {
-        const files = await uploadPng(floor.file)
-        const newFloor = await createFloor({
-          house_id: data.house.uuid,
-          index: i,
-          ...files,
-          height: 25,
-          name: `Floor ${i + 1}`
-        })
-        floors[i] = newFloor
+      try {
+        if (isServerFloor(floor)) {
+          const newFloor = await updateFloor(floor.uuid, {
+            ...floor,
+            index: i,
+            name: `Floor ${i + 1}`
+          })
+        } else {
+          const files = await uploadPng(floor.file)
+
+          const newFloor = {
+            house_id: data.house.uuid,
+            index: i,
+            ...files,
+            height: 25,
+            name: `Floor ${i + 1}`
+          }
+
+          console.log(newFloor)
+
+          const serverFloor = await createFloor(newFloor)
+
+          console.log(serverFloor)
+        }
+      } catch (error) {
+        console.error(error)
+        loading = 0
+        return
       }
 
       loading = ((i + 1) / floors.length) * 100
     }
 
     loading = 0
+    goto(`/${data.house.uuid}`)
   }
 </script>
 

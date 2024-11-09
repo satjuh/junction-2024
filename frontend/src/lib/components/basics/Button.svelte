@@ -6,6 +6,7 @@
   type BaseProps = {
     color?: Colors
     disabled?: boolean
+    icon?: boolean
   }
 
   type ButtonProps = BaseProps & HTMLButtonAttributes
@@ -21,7 +22,7 @@
     return !('href' in props)
   }
 
-  let { children, class: className, color = 'primary', disabled, ...other }: Props = $props()
+  let { children, class: className, color = 'primary', disabled, icon = false, ...other }: Props = $props()
 
   const baseClasses = 'px-4 py-2 bg-primary text-background rounded-full font-body font-extrabold'
 
@@ -32,7 +33,13 @@
   }
 
   const classes = $derived(
-    twMerge(baseClasses, color ? colorClasses[color] : null, className, disabled && 'opacity-20')
+    twMerge(
+      baseClasses,
+      color ? colorClasses[color] : null,
+      icon && 'flex items-center justify-center px-2',
+      className,
+      disabled && 'opacity-20'
+    )
   )
 </script>
 

@@ -2,30 +2,21 @@
   import { T } from '@threlte/core'
   import { useGltf } from '@threlte/extras'
   import { tweened } from 'svelte/motion'
-  import { readable } from 'svelte/store'
   import { Object3D, WireframeGeometry } from 'three'
   import { degToRad } from 'three/src/math/MathUtils.js'
-  import CssObject from './CssObject.svelte'
-  import Label from './Label.svelte'
-  import { cachedUrl } from './cachedUrl'
+  import CssObject from '../CssObject.svelte'
+  import Label from '../Label.svelte'
 
   type Props = {
     gltfUrl: string
     baseY: number
-    onClick?: (event: MouseEvent) => void
     onLoad?: (object: Object3D) => void
     label?: string
-    hovering?: boolean
-    somethingElseHovering?: boolean
-    onHoverStart?: () => void
-    onHoverEnd?: () => void
   }
 
-  let { gltfUrl, baseY, label, onLoad, hovering, somethingElseHovering = false }: Props = $props()
+  let { gltfUrl, baseY, label, onLoad }: Props = $props()
 
-  const url = cachedUrl(gltfUrl)
-
-  const gltf = $derived($url ? useGltf($url) : readable(undefined))
+  const gltf = useGltf(gltfUrl)
   let geometry = $derived($gltf?.nodes['geometry_0'].geometry || null)
 
   const opacity = tweened(0.5, { duration: 200 })
@@ -36,14 +27,6 @@
     if (geometry && !onLoadSent && onLoad) {
       onLoad(geometry)
       onLoadSent = true
-    }
-
-    if (hovering) {
-      opacity.set(1)
-    } else if (somethingElseHovering) {
-      opacity.set(0.05)
-    } else {
-      opacity.set(0.5)
     }
   })
 </script>
@@ -59,7 +42,7 @@
 
       {#if label}
         <CssObject position.x={300}>
-          <Label {label} {hovering} />
+          <Label {label} />
         </CssObject>
       {/if}
     </T.Mesh>

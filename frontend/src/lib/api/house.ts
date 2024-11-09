@@ -15,7 +15,7 @@ export type House = {
 export type CreateHouseDTO = Omit<House, 'uuid'>
 
 export const createHouse = async (house: CreateHouseDTO): Promise<House> => {
-  const response = await fetch(`${baseUrl}/houses/`, {
+  const response = await fetch(`${baseUrl}/houses`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ export const createHouse = async (house: CreateHouseDTO): Promise<House> => {
 }
 
 export const getHouses = async (): Promise<House[]> => {
-  const response = await fetch(`${baseUrl}/houses/`)
+  const response = await fetch(`${baseUrl}/houses`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch houses')
@@ -41,7 +41,12 @@ export const getHouses = async (): Promise<House[]> => {
 }
 
 export const getHouse = async (fetch: typeof window.fetch, uuid: string): Promise<House> => {
-  const response = await fetch(`${baseUrl}/houses/${uuid}`)
+  const response = await fetch(`${baseUrl}/houses/${uuid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 
   if (!response.ok) {
     throw new Error('Failed to fetch house')

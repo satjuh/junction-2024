@@ -12,7 +12,7 @@ export type Floor = {
 export type CreateFloorDTO = Omit<Floor, 'uuid'> & { house_id: string }
 
 export const createFloor = async (dto: CreateFloorDTO): Promise<Floor> => {
-  const res = await fetch(`${baseUrl}/floors`, {
+  const res = await fetch(`${baseUrl}/floor`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
