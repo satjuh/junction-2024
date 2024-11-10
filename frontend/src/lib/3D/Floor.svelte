@@ -1,29 +1,42 @@
 <script lang="ts">
+  import type { Object3d } from '$lib/api/object3d'
   import { T } from '@threlte/core'
   import { useGltf } from '@threlte/extras'
   import { tweened } from 'svelte/motion'
   import { readable } from 'svelte/store'
-  import { Object3D, WireframeGeometry } from 'three'
+  import { Mesh, WireframeGeometry } from 'three'
   import { degToRad } from 'three/src/math/MathUtils.js'
+  import { cachedUrl } from './cachedUrl'
   import CssObject from './CssObject.svelte'
   import Label from './Label.svelte'
-  import { cachedUrl } from './cachedUrl'
+  import Object from './Object.svelte'
 
   type Props = {
     gltfUrl: string
     baseY: number
     onClick?: (event: MouseEvent) => void
-    onLoad?: (object: Object3D) => void
+    onLoad?: (object: Mesh) => void
     label?: string
     hovering?: boolean
     somethingElseHovering?: boolean
-    onHoverStart?: () => void
-    onHoverEnd?: () => void
+    objects?: Object3d[]
+    floorsBefore?: number
+    floorsAfter?: number
   }
 
-  let { gltfUrl, baseY, label, onLoad, hovering, somethingElseHovering = false }: Props = $props()
+  let {
+    gltfUrl,
+    baseY,
+    label,
+    onLoad,
+    hovering,
+    somethingElseHovering = false,
+    objects,
+    floorsAfter,
+    floorsBefore
+  }: Props = $props()
 
-  const url = cachedUrl(gltfUrl)
+  const url = $derived(cachedUrl(gltfUrl))
 
   const gltf = $derived($url ? useGltf($url) : readable(undefined))
   let geometry = $derived($gltf?.nodes['geometry_0'].geometry || null)
@@ -34,7 +47,7 @@
 
   $effect(() => {
     if (geometry && !onLoadSent && onLoad) {
-      onLoad(geometry)
+      onLoad(mesh)
       onLoadSent = true
     }
 
@@ -46,11 +59,17 @@
       opacity.set(0.5)
     }
   })
+
+  let mesh: Mesh
+
+  $effect(() => {
+    console.log({ objects })
+  })
 </script>
 
 <T.Group position.y={baseY}>
   {#if geometry}
-    <T.Mesh {geometry} rotation.x={degToRad(90)}>
+    <T.Mesh bind:ref={mesh} {geometry} rotation.x={degToRad(-90)}>
       <T.MeshStandardMaterial color={0x4080ff} opacity={$opacity} transparent attach="material" />
 
       <T.LineSegments args={[new WireframeGeometry(geometry)]}>
@@ -63,5 +82,11 @@
         </CssObject>
       {/if}
     </T.Mesh>
+  {/if}
+
+  {#if objects?.length}
+    {#each objects as object}
+      <Object {object} {floorsBefore} {floorsAfter} />
+    {/each}
   {/if}
 </T.Group>

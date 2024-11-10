@@ -89,6 +89,12 @@
 </script>
 
 <main class="mx-auto flex max-w-screen-lg flex-col gap-10 px-10 pt-20">
+  <Button href={`/${data.house.uuid}`} icon class="absolute left-4 top-4 z-20">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </Button>
+
   <h1>FLOOR PLAN EDITOR</h1>
 
   {#if floors.length > 0}

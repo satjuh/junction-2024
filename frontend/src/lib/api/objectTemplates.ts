@@ -22,7 +22,7 @@ export const getObjectTemplates = async (fetch: typeof window.fetch): Promise<Ob
     {
       uuid: '3',
       name: 'Electrical Box',
-      model: '/electrical.glb',
+      model: '/eletric_box.glb',
       data: '{}'
     }
   ]

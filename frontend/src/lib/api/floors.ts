@@ -1,4 +1,5 @@
 import { baseUrl } from '.'
+import type { Object3d } from './object3d'
 
 export type Floor = {
   uuid: string
@@ -6,7 +7,9 @@ export type Floor = {
   index: number
   height: number
   floor_3D: string
+  floor_3D_walls?: string
   floor_png: string
+  objects?: Object3d[]
 }
 
 export type CreateFloorDTO = Omit<Floor, 'uuid'> & { house_id: string }
@@ -28,8 +31,8 @@ export const createFloor = async (dto: CreateFloorDTO): Promise<Floor> => {
 }
 
 export const updateFloor = async (uuid: string, dto: Floor): Promise<Floor> => {
-  const res = await fetch(`${baseUrl}/floors/${uuid}`, {
-    method: 'PATCH',
+  const res = await fetch(`${baseUrl}/floor/${uuid}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
