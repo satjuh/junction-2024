@@ -90,10 +90,6 @@
   let mainGroup: Group
   // svelte-ignore non_reactive_update
   let perspectiveCamera: PerspectiveCamera
-
-  $effect(() => {
-    console.log(floors)
-  })
 </script>
 
 <T.PerspectiveCamera

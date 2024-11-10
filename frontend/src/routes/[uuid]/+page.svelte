@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import Exporter from '$lib/3D/Exporter.svelte'
   import ViewScene from '$lib/3D/ViewScene.svelte'
   import Button from '$lib/components/basics/Button.svelte'
   import { Canvas } from '@threlte/core'
@@ -20,6 +21,17 @@
   let sceneFloors = $derived(
     floors.map((f, i) => ({ ...f, hovering: f.uuid === hoveringFloor })).sort((a, b) => a.index - b.index)
   )
+
+  let exportGtlf: () => Promise<[Blob, string]>
+
+  const saveFile = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 </script>
 
 <div id="css-renderer-target"></div>
@@ -43,6 +55,7 @@
         exposure={0.26}
       />
       <ViewScene floors={sceneFloors} somethingElseHovering={hoveringFloor !== null} />
+      <Exporter bind:exportGtlf />
     </Canvas>
   </main>
   <div id="layout" class="flex h-full min-w-72 flex-1 flex-col-reverse bg-black">
@@ -71,6 +84,18 @@
       <Button href={`/${house.uuid}/edit`}>Edit floors</Button>
     </div>
   </div>
+</div>
+
+<div class="fixed bottom-4 right-4 z-20">
+  <Button
+    onclick={async () => {
+      const [blob, filename] = await exportGtlf()
+      console.log('blob', blob)
+      saveFile(blob, filename)
+    }}
+  >
+    Export
+  </Button>
 </div>
 
 <style>

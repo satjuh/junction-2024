@@ -64,7 +64,7 @@
   {/if}
 
   {#if isElevatorSaft}
-    <T.Mesh position.y={saftHeight - 37} position.z={-depth / 2} position.x={-width / 2}>
+    <T.Mesh position.y={saftHeight / 2} position.z={-depth / 2} position.x={-width / 2}>
       <T.MeshStandardMaterial color={'hotpink'} attach="material" />
       <T.BoxGeometry args={[width, saftHeight, depth]} />
     </T.Mesh>

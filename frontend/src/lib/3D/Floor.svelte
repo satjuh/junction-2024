@@ -61,10 +61,6 @@
   })
 
   let mesh: Mesh
-
-  $effect(() => {
-    console.log({ objects })
-  })
 </script>
 
 <T.Group position.y={baseY}>
